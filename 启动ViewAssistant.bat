@@ -10,7 +10,7 @@ for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8000 "') do (
 )
 
 :: 后台启动服务器
-start "" /b python server.py
+start "" /b python src\server.py
 
 :: 等待服务器就绪（最多 10 秒）
 set /a count=0

@@ -10,7 +10,7 @@ elif command -v fuser > /dev/null; then
 fi
 
 echo "🚀 正在启动 ViewAssistant..."
-python3 "$DIR/server.py" &
+python3 "$DIR/src/server.py" &
 SERVER_PID=$!
 
 # 等待服务器就绪（最多 10 秒）

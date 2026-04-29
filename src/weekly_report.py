@@ -7,7 +7,8 @@ from openai import OpenAI
 import html2text
 from dotenv import dotenv_values
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(SCRIPT_DIR)
 env = dotenv_values(os.path.join(BASE_DIR, ".env"))
 
 with open(os.path.join(BASE_DIR, "config.json")) as f:
@@ -66,6 +67,7 @@ def generate_report(emails):
 
 
 LAST_RUN_FILE = os.path.join(BASE_DIR, "logs", ".last_run")
+LOG_DIR = os.path.join(BASE_DIR, "logs")
 
 
 def save_report(report):
@@ -79,6 +81,7 @@ def save_report(report):
 
 
 def record_last_run():
+    os.makedirs(LOG_DIR, exist_ok=True)
     with open(LAST_RUN_FILE, "w") as f:
         f.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 

@@ -11,14 +11,15 @@ from dotenv import dotenv_values
 
 app = FastAPI()
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(SCRIPT_DIR)
 CONFIG_FILE = os.path.join(BASE_DIR, "config.json")
 ENV_FILE = os.path.join(BASE_DIR, ".env")
 
 
 @app.get("/", response_class=HTMLResponse)
 async def index():
-    with open(os.path.join(BASE_DIR, "templates", "index.html"), encoding="utf-8") as f:
+    with open(os.path.join(BASE_DIR, "templates", "index.html"), encoding="utf-8") as f:  # noqa
         return f.read()
 
 
@@ -61,7 +62,7 @@ async def run_report():
     async def generate():
         proc = await asyncio.create_subprocess_exec(
             sys.executable,
-            os.path.join(BASE_DIR, "weekly_report.py"),
+            os.path.join(SCRIPT_DIR, "weekly_report.py"),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,
         )
@@ -79,7 +80,7 @@ async def run_report():
 
 @app.get("/api/logs")
 async def get_logs():
-    log_file = os.path.join(BASE_DIR, "logs", "run.log")
+    log_file = os.path.join(BASE_DIR, "logs", "run.log")  # noqa
     if not os.path.exists(log_file):
         return {"content": "暂无日志"}
     with open(log_file, encoding="utf-8", errors="replace") as f:
@@ -89,4 +90,4 @@ async def get_logs():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
