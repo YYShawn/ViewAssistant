@@ -230,7 +230,9 @@ ViewAssistant/
 ├── config.example.json    # 配置模板
 ├── .env                   # 密钥文件（不上传 GitHub）
 ├── .gitignore
-├── .last_run              # 上次运行时间记录（自动生成）
-├── run.log                # 定时任务日志（自动生成）
-└── startup_check.log      # 补跑日志（自动生成）
+├── DEPLOY.md              # 部署指南
+└── logs/                  # 运行时自动生成（不上传 GitHub）
+    ├── run.log            # 定时任务日志
+    ├── startup_check.log  # 补跑日志
+    └── .last_run          # 上次运行时间记录
 ```

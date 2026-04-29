@@ -1,8 +1,7 @@
 config.json
 .env
-run.log
-startup_check.log
-.last_run
+logs/*
+!logs/.gitkeep
 *.pyc
 __pycache__/
 .DS_Store

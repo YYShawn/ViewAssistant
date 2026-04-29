@@ -5,7 +5,7 @@ import sys
 import subprocess
 from datetime import datetime, timedelta
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-LAST_RUN_FILE = os.path.join(BASE_DIR, ".last_run")
+LAST_RUN_FILE = os.path.join(BASE_DIR, "logs", ".last_run")
 MAIN_SCRIPT = os.path.join(BASE_DIR, "weekly_report.py")
 
 

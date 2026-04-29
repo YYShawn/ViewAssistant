@@ -65,7 +65,7 @@ def generate_report(emails):
     return response.choices[0].message.content
 
 
-LAST_RUN_FILE = os.path.join(BASE_DIR, ".last_run")
+LAST_RUN_FILE = os.path.join(BASE_DIR, "logs", ".last_run")
 
 
 def save_report(report):
