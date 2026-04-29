@@ -4,6 +4,7 @@ import json
 from datetime import datetime, timedelta
 from imap_tools import MailBox, AND
 from openai import OpenAI
+import html2text
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,14 +26,21 @@ def fetch_weekly_emails():
     if cfg.get("sender_filter"):
         criteria["from_"] = cfg["sender_filter"]
 
+    h = html2text.HTML2Text()
+    h.ignore_images = True
+    h.body_width = 0
+
     with MailBox(IMAP_HOST).login(EMAIL, PASSWORD) as mb:
         for msg in mb.fetch(AND(**criteria)):
             keyword = cfg.get("subject_keyword", "")
             if keyword and keyword.lower() not in msg.subject.lower():
                 continue
-            body = msg.text or msg.html or ""
+            if msg.html:
+                body = h.handle(msg.html)
+            else:
+                body = msg.text or ""
             emails.append(
-                f"### {msg.date.strftime('%Y-%m-%d')} | {msg.subject}\n{body[:3000]}"
+                f"### {msg.date.strftime('%Y-%m-%d')} | {msg.subject}\n{body[:5000]}"
             )
 
     return emails
