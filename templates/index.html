@@ -142,6 +142,11 @@
         <input type="text" id="subject_keyword" placeholder="AI" />
         <span class="hint">按主题关键词过滤，留空则不过滤</span>
       </div>
+      <div class="form-group full">
+        <label>周报发送至（收件人邮箱）</label>
+        <input type="text" id="notify_email" placeholder="留空则不发送邮件" />
+        <span class="hint">生成后自动通过 QQ 邮箱发送，可填写任意邮箱地址</span>
+      </div>
     </div>
   </div>
 
@@ -223,7 +228,7 @@
 </main>
 
 <script>
-  const fields = ['email','imap_host','sender_filter','subject_keyword','output_dir','prompt','schedule_day','schedule_time','email_password','deepseek_api_key'];
+  const fields = ['email','imap_host','sender_filter','subject_keyword','notify_email','output_dir','prompt','schedule_day','schedule_time','email_password','deepseek_api_key'];
 
   async function loadConfig() {
     try {

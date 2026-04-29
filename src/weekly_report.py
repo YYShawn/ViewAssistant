@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 import os
 import json
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 from datetime import datetime, timedelta
 from imap_tools import MailBox, AND
 from openai import OpenAI
@@ -78,6 +83,35 @@ def save_report(report):
         f.write(f"# AI 前沿资讯周报（{datetime.now().strftime('%Y年第%W周')}）\n\n")
         f.write(report)
     print(f"[完成] 报告已保存：{path}")
+    return path
+
+
+def send_report_email(report: str, filepath: str):
+    notify_email = cfg.get("notify_email", "").strip()
+    if not notify_email:
+        return
+
+    week_label = datetime.now().strftime("%Y年第%W周")
+    msg = MIMEMultipart()
+    msg["From"] = EMAIL
+    msg["To"] = notify_email
+    msg["Subject"] = f"AI 前沿资讯周报 · {week_label}"
+    msg.attach(MIMEText(report, "plain", "utf-8"))
+
+    with open(filepath, "rb") as f:
+        part = MIMEBase("application", "octet-stream")
+        part.set_payload(f.read())
+        encoders.encode_base64(part)
+        part.add_header("Content-Disposition", f'attachment; filename="{os.path.basename(filepath)}"')
+        msg.attach(part)
+
+    try:
+        with smtplib.SMTP_SSL("smtp.qq.com", 465) as server:
+            server.login(EMAIL, PASSWORD)
+            server.sendmail(EMAIL, notify_email, msg.as_string())
+        print(f"[邮件] 周报已发送至 {notify_email}")
+    except Exception as e:
+        print(f"[邮件] 发送失败：{e}")
 
 
 def record_last_run():
@@ -93,7 +127,8 @@ if __name__ == "__main__":
     if emails:
         print("正在生成周报...")
         report = generate_report(emails)
-        save_report(report)
+        path = save_report(report)
+        send_report_email(report, path)
         record_last_run()
     else:
         print("本周未找到符合条件的邮件，请检查 config.json 中的过滤条件")

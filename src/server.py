@@ -63,6 +63,7 @@ class ConfigModel(BaseModel):
     prompt: str
     schedule_day: int = 5
     schedule_time: str = "09:00"
+    notify_email: str = ""
     email_password: str
     deepseek_api_key: str
 
