@@ -1,0 +1,6 @@
+imap-tools
+openai
+html2text
+python-dotenv
+fastapi
+uvicorn
