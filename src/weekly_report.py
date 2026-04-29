@@ -6,6 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+import markdown
 from datetime import datetime, timedelta
 from imap_tools import MailBox, AND
 from openai import OpenAI
@@ -86,29 +87,73 @@ def save_report(report):
     return path
 
 
+EMAIL_HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><style>
+  body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         background: #f0f2f5; margin: 0; padding: 24px; color: #1a1a2e; }}
+  .wrap {{ max-width: 680px; margin: 0 auto; background: white;
+           border-radius: 12px; padding: 36px;
+           box-shadow: 0 1px 4px rgba(0,0,0,0.08); }}
+  h1 {{ font-size: 22px; color: #1a1a2e;
+        border-bottom: 2px solid #3b82f6; padding-bottom: 12px; margin-top: 0; }}
+  h2 {{ font-size: 16px; color: #1a1a2e;
+        border-left: 4px solid #3b82f6; padding-left: 12px; margin-top: 32px; }}
+  h3 {{ font-size: 14px; color: #374151; margin-top: 20px; }}
+  p  {{ color: #374151; line-height: 1.8; margin: 8px 0; }}
+  a  {{ color: #3b82f6; text-decoration: none; }}
+  a:hover {{ text-decoration: underline; }}
+  ul {{ padding-left: 20px; }}
+  li {{ color: #374151; line-height: 1.8; margin: 6px 0; }}
+  strong {{ color: #1a1a2e; }}
+  hr {{ border: none; border-top: 1px solid #f3f4f6; margin: 24px 0; }}
+  .footer {{ margin-top: 32px; padding-top: 16px; border-top: 1px solid #f3f4f6;
+             font-size: 12px; color: #9ca3af; }}
+</style></head>
+<body><div class="wrap">
+{content}
+<div class="footer">由 ViewAssistant 自动生成 · {date}</div>
+</div></body></html>"""
+
+
 def send_report_email(report: str, filepath: str):
     notify_email = cfg.get("notify_email", "").strip()
     if not notify_email:
         return
 
     week_label = datetime.now().strftime("%Y年第%W周")
-    msg = MIMEMultipart()
+    html_body = markdown.markdown(report, extensions=["extra", "nl2br"])
+    html_content = EMAIL_HTML_TEMPLATE.format(
+        content=html_body,
+        date=datetime.now().strftime("%Y-%m-%d")
+    )
+
+    msg = MIMEMultipart("alternative")
     msg["From"] = EMAIL
     msg["To"] = notify_email
     msg["Subject"] = f"AI 前沿资讯周报 · {week_label}"
     msg.attach(MIMEText(report, "plain", "utf-8"))
+    msg.attach(MIMEText(html_content, "html", "utf-8"))
+
+    # 附件（用 ASCII 文件名避免乱码）
+    ascii_filename = f"AI_Weekly_{datetime.now().strftime('%Y-W%W')}.md"
+    outer = MIMEMultipart("mixed")
+    outer["From"] = EMAIL
+    outer["To"] = notify_email
+    outer["Subject"] = msg["Subject"]
+    outer.attach(msg)
 
     with open(filepath, "rb") as f:
         part = MIMEBase("application", "octet-stream")
         part.set_payload(f.read())
         encoders.encode_base64(part)
-        part.add_header("Content-Disposition", f'attachment; filename="{os.path.basename(filepath)}"')
-        msg.attach(part)
+        part.add_header("Content-Disposition", f'attachment; filename="{ascii_filename}"')
+        outer.attach(part)
 
     try:
         with smtplib.SMTP_SSL("smtp.qq.com", 465) as server:
             server.login(EMAIL, PASSWORD)
-            server.sendmail(EMAIL, notify_email, msg.as_string())
+            server.sendmail(EMAIL, notify_email, outer.as_string())
         print(f"[邮件] 周报已发送至 {notify_email}")
     except Exception as e:
         print(f"[邮件] 发送失败：{e}")

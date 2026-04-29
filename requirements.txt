@@ -4,3 +4,4 @@ html2text
 python-dotenv
 fastapi
 uvicorn
+markdown
