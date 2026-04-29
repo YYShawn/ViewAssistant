@@ -55,6 +55,9 @@ def generate_report(emails):
     return response.choices[0].message.content
 
 
+LAST_RUN_FILE = os.path.join(BASE_DIR, ".last_run")
+
+
 def save_report(report):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     filename = f"AI周报_{datetime.now().strftime('%Y-%m-%d')}.md"
@@ -65,6 +68,11 @@ def save_report(report):
     print(f"[完成] 报告已保存：{path}")
 
 
+def record_last_run():
+    with open(LAST_RUN_FILE, "w") as f:
+        f.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+
 if __name__ == "__main__":
     print("正在读取本周邮件...")
     emails = fetch_weekly_emails()
@@ -73,5 +81,6 @@ if __name__ == "__main__":
         print("正在生成周报...")
         report = generate_report(emails)
         save_report(report)
+        record_last_run()
     else:
         print("本周未找到符合条件的邮件，请检查 config.json 中的过滤条件")

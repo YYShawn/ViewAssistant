@@ -1,5 +1,7 @@
 config.json
 run.log
+startup_check.log
+.last_run
 *.pyc
 __pycache__/
 .DS_Store
