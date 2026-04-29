@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """开机时检查是否错过了周五的周报，若错过则立即补跑。"""
 import os
+import sys
 import subprocess
 from datetime import datetime, timedelta
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -35,6 +36,6 @@ if __name__ == "__main__":
 
     if last_run is None or last_run < last_scheduled:
         print(f"[补跑] 检测到 {last_scheduled.strftime('%Y-%m-%d')} 周五的周报未生成，开始补跑...")
-        subprocess.run(["/usr/bin/python3", MAIN_SCRIPT], env=os.environ)
+        subprocess.run([sys.executable, MAIN_SCRIPT])
     else:
         print(f"[跳过] 本周周报已于 {last_run.strftime('%Y-%m-%d %H:%M')} 生成，无需补跑")
