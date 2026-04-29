@@ -1,0 +1,8 @@
+{
+  "email": "你的QQ号@qq.com",
+  "imap_host": "imap.qq.com",
+  "sender_filter": "",
+  "subject_keyword": "AI",
+  "output_dir": "~/Documents/AI_Reports",
+  "prompt": "你是一位AI研究助理，请将以下本周的AI前沿资讯邮件整理成一份中文周报。\n要求：\n- 按主题分类（模型进展 / 应用落地 / 行业动态 / 其他）\n- 每条保留核心要点，去除广告和无关内容\n- 标注你认为最值得关注的3项进展，说明理由\n- 开头写一段50字以内的本周总体概述\n- 输出格式为 Markdown"
+}
