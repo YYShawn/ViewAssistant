@@ -102,6 +102,51 @@ async def run_report():
     return StreamingResponse(generate(), media_type="text/event-stream")
 
 
+def _pick_folder_sync() -> str:
+    system = platform.system()
+    try:
+        if system == "Darwin":
+            result = subprocess.run(
+                ["osascript", "-e", 'POSIX path of (choose folder with prompt "选择周报保存目录")'],
+                capture_output=True, text=True, timeout=60
+            )
+            return result.stdout.strip().rstrip("/")
+        elif system == "Windows":
+            script = (
+                "Add-Type -AssemblyName System.Windows.Forms;"
+                "$d = New-Object System.Windows.Forms.FolderBrowserDialog;"
+                "$d.Description = '选择周报保存目录';"
+                "$d.ShowDialog() | Out-Null;"
+                "Write-Output $d.SelectedPath"
+            )
+            result = subprocess.run(
+                ["powershell", "-Command", script],
+                capture_output=True, text=True, timeout=60
+            )
+            return result.stdout.strip()
+        else:  # Linux
+            for cmd in [
+                ["zenity", "--file-selection", "--directory", "--title=选择周报保存目录"],
+                ["kdialog", "--getexistingdirectory", os.path.expanduser("~")],
+            ]:
+                try:
+                    result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+                    if result.returncode == 0:
+                        return result.stdout.strip()
+                except FileNotFoundError:
+                    continue
+    except Exception:
+        pass
+    return ""
+
+
+@app.get("/api/pick-folder")
+async def pick_folder():
+    loop = asyncio.get_event_loop()
+    path = await loop.run_in_executor(None, _pick_folder_sync)
+    return {"path": path}
+
+
 @app.get("/api/logs")
 async def get_logs():
     log_file = os.path.join(BASE_DIR, "logs", "run.log")

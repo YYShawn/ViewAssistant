@@ -67,6 +67,13 @@
       font-size: 15px; line-height: 1; padding: 2px;
     }
     .eye-btn:hover { color: #6b7280; }
+    .folder-btn {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      font-size: 17px; line-height: 1; padding: 2px; opacity: 0.6;
+    }
+    .folder-btn:hover { opacity: 1; }
+    .folder-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
     .actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .btn {
@@ -185,7 +192,10 @@
     <h2>输出配置</h2>
     <div class="form-group">
       <label>周报保存目录</label>
-      <input type="text" id="output_dir" placeholder="/Users/xxx/Documents/AI_Reports" />
+      <div class="input-wrap">
+        <input type="text" id="output_dir" placeholder="/Users/xxx/Documents/AI_Reports" style="padding-right: 38px;" />
+        <button class="folder-btn" id="btn-pick-folder" onclick="pickFolder()" title="浏览文件夹">📁</button>
+      </div>
     </div>
   </div>
 
@@ -282,6 +292,23 @@
       div.className = 'line-err';
       div.textContent = '连接服务器失败';
       logBox.appendChild(div);
+    }
+    btn.disabled = false;
+  }
+
+  async function pickFolder() {
+    const btn = document.getElementById('btn-pick-folder');
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/pick-folder');
+      const data = await res.json();
+      if (data.path) {
+        document.getElementById('output_dir').value = data.path;
+      } else {
+        showToast('未选择文件夹', 'err');
+      }
+    } catch(e) {
+      showToast('无法打开文件夹选择器', 'err');
     }
     btn.disabled = false;
   }
