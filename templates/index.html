@@ -37,6 +37,16 @@
     label { font-size: 13px; font-weight: 500; color: #374151; }
     .hint { font-size: 11px; color: #9ca3af; margin-top: 2px; }
 
+    select {
+      border: 1px solid #e5e7eb; border-radius: 8px;
+      padding: 9px 12px; font-size: 14px; color: #1f2937;
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+      font-family: inherit; width: 100%; background: white; cursor: pointer;
+    }
+    select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
     input, textarea {
       border: 1px solid #e5e7eb; border-radius: 8px;
       padding: 9px 12px; font-size: 14px; color: #1f2937;
@@ -149,6 +159,29 @@
   </div>
 
   <div class="card">
+    <h2>执行计划</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>执行日期</label>
+        <select id="schedule_day">
+          <option value="1">周一</option>
+          <option value="2">周二</option>
+          <option value="3">周三</option>
+          <option value="4">周四</option>
+          <option value="5">周五</option>
+          <option value="6">周六</option>
+          <option value="0">周日</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>执行时间</label>
+        <input type="time" id="schedule_time" />
+        <span class="hint">保存后 crontab 自动更新（macOS / Linux）</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <h2>输出配置</h2>
     <div class="form-group">
       <label>周报保存目录</label>
@@ -180,7 +213,7 @@
 </main>
 
 <script>
-  const fields = ['email','imap_host','sender_filter','subject_keyword','output_dir','prompt','email_password','deepseek_api_key'];
+  const fields = ['email','imap_host','sender_filter','subject_keyword','output_dir','prompt','schedule_day','schedule_time','email_password','deepseek_api_key'];
 
   async function loadConfig() {
     try {
@@ -200,6 +233,7 @@
     btn.disabled = true;
     const body = {};
     fields.forEach(k => body[k] = document.getElementById(k).value);
+    body.schedule_day = parseInt(body.schedule_day);
     try {
       const res = await fetch('/api/config', {
         method: 'POST',
