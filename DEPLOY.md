@@ -73,6 +73,12 @@ python weekly_report.py
 
 ## macOS 部署
 
+### 启动配置页面
+
+双击项目目录中的 **启动ViewAssistant.command**，终端窗口会自动弹出并打开浏览器。
+
+> 首次双击若提示"无法打开"，右键 → 打开 → 允许即可。
+
 ### config.json 中的 output_dir 填写示例
 
 ```json
@@ -137,6 +143,10 @@ launchctl load ~/Library/LaunchAgents/com.viewassistant.checkrun.plist
 
 ## Windows 部署
 
+### 启动配置页面
+
+双击项目目录中的 **启动ViewAssistant.bat**，命令行窗口会自动弹出并打开浏览器。按任意键关闭窗口时服务器同步停止。
+
 ### 前置：安装 Python
 
 从 [python.org](https://www.python.org/downloads/) 下载安装 Python 3.9+，安装时勾选 **Add Python to PATH**。
@@ -166,6 +176,14 @@ launchctl load ~/Library/LaunchAgents/com.viewassistant.checkrun.plist
 ---
 
 ## Linux 部署
+
+### 启动配置页面
+
+在文件管理器中双击 **启动ViewAssistant.sh**（需在桌面环境中选择"在终端中运行"），或在终端执行：
+
+```bash
+./启动ViewAssistant.sh
+```
 
 ### config.json 中的 output_dir 填写示例
 
@@ -224,15 +242,22 @@ sudo systemctl start viewassistant.service
 
 ```
 ViewAssistant/
-├── weekly_report.py       # 主脚本
-├── check_missed_run.py    # 开机补跑脚本
-├── config.json            # 本地配置（不上传 GitHub）
-├── config.example.json    # 配置模板
-├── .env                   # 密钥文件（不上传 GitHub）
+├── weekly_report.py              # 主脚本
+├── check_missed_run.py           # 开机补跑脚本
+├── server.py                     # Web 配置后端
+├── templates/
+│   └── index.html                # Web 配置页面
+├── 启动ViewAssistant.command     # macOS 双击启动
+├── 启动ViewAssistant.bat         # Windows 双击启动
+├── 启动ViewAssistant.sh          # Linux 双击启动
+├── requirements.txt              # Python 依赖清单
+├── config.json                   # 本地配置（不上传 GitHub）
+├── config.example.json           # 配置模板
+├── .env                          # 密钥文件（不上传 GitHub）
 ├── .gitignore
-├── DEPLOY.md              # 部署指南
-└── logs/                  # 运行时自动生成（不上传 GitHub）
-    ├── run.log            # 定时任务日志
-    ├── startup_check.log  # 补跑日志
-    └── .last_run          # 上次运行时间记录
+├── DEPLOY.md                     # 部署指南
+└── logs/                         # 运行时自动生成（不上传 GitHub）
+    ├── run.log                   # 定时任务日志
+    ├── startup_check.log         # 补跑日志
+    └── .last_run                 # 上次运行时间记录
 ```
