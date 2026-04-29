@@ -5,17 +5,17 @@ from datetime import datetime, timedelta
 from imap_tools import MailBox, AND
 from openai import OpenAI
 import html2text
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+env = dotenv_values(os.path.join(BASE_DIR, ".env"))
 
 with open(os.path.join(BASE_DIR, "config.json")) as f:
     cfg = json.load(f)
 
 EMAIL = cfg["email"]
 IMAP_HOST = cfg["imap_host"]
-PASSWORD = os.environ["EMAIL_PASSWORD"]
+PASSWORD = env["EMAIL_PASSWORD"]
 OUTPUT_DIR = os.path.expanduser(cfg["output_dir"])
 PROMPT = cfg["prompt"]
 
@@ -50,7 +50,7 @@ def fetch_weekly_emails():
 
 def generate_report(emails):
     client = OpenAI(
-        api_key=os.environ["DEEPSEEK_API_KEY"],
+        api_key=env["DEEPSEEK_API_KEY"],
         base_url="https://api.deepseek.com"
     )
     content = "\n\n---\n\n".join(emails)

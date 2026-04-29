@@ -3,10 +3,7 @@
 import os
 import subprocess
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(os.path.join(BASE_DIR, ".env"))
 LAST_RUN_FILE = os.path.join(BASE_DIR, ".last_run")
 MAIN_SCRIPT = os.path.join(BASE_DIR, "weekly_report.py")
 
