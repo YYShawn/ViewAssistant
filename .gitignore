@@ -1,4 +1,5 @@
 config.json
+.env
 run.log
 startup_check.log
 .last_run

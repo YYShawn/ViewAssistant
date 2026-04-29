@@ -5,8 +5,10 @@ from datetime import datetime, timedelta
 from imap_tools import MailBox, AND
 from openai import OpenAI
 import html2text
+from dotenv import load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 with open(os.path.join(BASE_DIR, "config.json")) as f:
     cfg = json.load(f)
