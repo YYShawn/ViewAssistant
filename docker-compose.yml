@@ -1,0 +1,14 @@
+services:
+  viewassistant:
+    build: .
+    container_name: viewassistant
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Shanghai
+      - CRON_SCHEDULE=0 9 * * 5
+    volumes:
+      - ./config.json:/app/config.json:ro
+      - ./output:/app/output
+      - ./logs:/app/logs

@@ -9,7 +9,21 @@
 
 ---
 
+命令行运行
+  ./dev.sh
+
 ## 前置准备（所有系统通用）
+
+### 0. 环境要求
+
+- **Python 3.9+**（推荐 3.11 或更高）
+- macOS / Windows / Linux
+
+快速检测环境是否就绪：
+
+```bash
+python3 check_env.py
+```
 
 ### 1. 获取 QQ 邮箱 IMAP 授权码
 
@@ -33,9 +47,29 @@ cd ViewAssistant-
 
 ### 4. 安装 Python 依赖
 
+**推荐使用虚拟环境（避免污染系统 Python）：**
+
+```bash
+# 创建虚拟环境
+python3 -m venv venv
+
+# 激活虚拟环境
+# macOS/Linux:
+source venv/bin/activate
+# Windows:
+venv\Scripts\activate
+
+# 安装依赖
+pip install -r requirements.txt
+```
+
+**或直接安装到系统（不推荐）：**
+
 ```bash
 pip install imap-tools openai html2text python-dotenv
 ```
+
+> 💡 使用虚拟环境后，每次运行脚本前需要先激活环境
 
 ### 5. 创建 .env 文件
 
@@ -240,10 +274,77 @@ sudo systemctl start viewassistant.service
 
 ## 文件结构说明
 
+---
+
+## Docker 部署（可选）
+
+> 适合熟悉 Docker 的用户，提供完全隔离的运行环境
+
+### 前置要求
+
+- 安装 [Docker Desktop](https://www.docker.com/products/docker-desktop/)（macOS/Windows）
+- 或安装 Docker Engine（Linux）
+
+### 快速启动
+
+1. 确保 `.env` 和 `config.json` 已配置完成
+2. 构建并启动容器：
+
+```bash
+docker-compose up -d
+```
+
+### 查看日志
+
+```bash
+docker-compose logs -f
+```
+
+### 停止服务
+
+```bash
+docker-compose down
+```
+
+### 说明
+
+- 容器内运行 cron 守护进程，按 `config.json` 中的调度配置自动执行
+- 输出目录会挂载到宿主机，文件保存在你配置的 `output_dir`
+- 如需修改配置，编辑 `.env` 或 `config.json` 后执行 `docker-compose restart`
+
+---
+
+## 常见问题
+
+### 虚拟环境相关
+
+**Q: 每次运行都要激活虚拟环境吗？**  
+A: 是的。如果使用虚拟环境，运行前需要先 `source venv/bin/activate`（或 Windows 的 `venv\Scripts\activate`）
+
+**Q: crontab 定时任务怎么使用虚拟环境？**  
+A: 在 crontab 中使用虚拟环境内的 Python：
+
+```
+0 9 * * 5 /完整路径/ViewAssistant/venv/bin/python /完整路径/ViewAssistant/weekly_report.py >> /完整路径/ViewAssistant/run.log 2>&1
+```
+
+### 依赖安装问题
+
+**Q: pip install 报错怎么办？**  
+A: 尝试升级 pip：`python3 -m pip install --upgrade pip`
+
+**Q: 国内网络安装慢怎么办？**  
+A: 使用国内镜像源：`pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple`
+
+---
+
+## 文件结构说明
+
 ```
 ViewAssistant/
 ├── weekly_report.py              # 主脚本
 ├── check_missed_run.py           # 开机补跑脚本
+├── check_env.py                  # 环境检测脚本
 ├── server.py                     # Web 配置后端
 ├── templates/
 │   └── index.html                # Web 配置页面
@@ -251,6 +352,8 @@ ViewAssistant/
 ├── 启动ViewAssistant.bat         # Windows 双击启动
 ├── 启动ViewAssistant.sh          # Linux 双击启动
 ├── requirements.txt              # Python 依赖清单
+├── Dockerfile                    # Docker 部署（可选）
+├── docker-compose.yml            # Docker 编排（可选）
 ├── config.json                   # 本地配置（不上传 GitHub）
 ├── config.example.json           # 配置模板
 ├── .env                          # 密钥文件（不上传 GitHub）
