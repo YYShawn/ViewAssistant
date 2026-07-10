@@ -28,10 +28,22 @@ PROMPT = cfg["prompt"]
 
 
 def fetch_weekly_emails():
-    since = datetime.now() - timedelta(days=7)
+    range_type = cfg.get("date_range_type", "1week")
+    if range_type == "custom":
+        date_from = cfg.get("date_from", "")
+        date_to = cfg.get("date_to", "")
+        since = datetime.strptime(date_from, "%Y-%m-%d") if date_from else datetime.now() - timedelta(days=7)
+        until = datetime.strptime(date_to, "%Y-%m-%d") + timedelta(days=1) if date_to else None
+    else:
+        presets = {"1week": 7, "2weeks": 14, "1month": 30, "3months": 90}
+        days = presets.get(range_type, 7)
+        since = datetime.now() - timedelta(days=days)
+        until = None
     emails = []
 
     criteria = {"date_gte": since.date()}
+    if until:
+        criteria["date_lt"] = until.date()
     if cfg.get("sender_filter"):
         criteria["from_"] = cfg["sender_filter"]
 
@@ -41,6 +53,10 @@ def fetch_weekly_emails():
 
     with MailBox(IMAP_HOST).login(EMAIL, PASSWORD) as mb:
         for msg in mb.fetch(AND(**criteria)):
+            if msg.date.date() < since.date():
+                continue
+            if until and msg.date.date() >= until.date():
+                continue
             keyword = cfg.get("subject_keyword", "")
             if keyword and keyword.lower() not in msg.subject.lower():
                 continue

@@ -61,6 +61,9 @@ class ConfigModel(BaseModel):
     subject_keyword: str
     output_dir: str
     prompt: str
+    date_range_type: str = "1week"
+    date_from: str = ""
+    date_to: str = ""
     schedule_day: int = 5
     schedule_time: str = "09:00"
     notify_email: str = ""
