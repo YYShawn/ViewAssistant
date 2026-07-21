@@ -1,7 +1,1 @@
-config.json
 .env
-logs/*
-!logs/.gitkeep
-*.pyc
-__pycache__/
-.DS_Store
