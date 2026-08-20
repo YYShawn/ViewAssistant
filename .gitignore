@@ -20,6 +20,9 @@ venv/
 # Claude 对话记录
 .waylog/
 
+# Claude 项目上下文（本地）
+CLAUDE.md
+
 # 输出
 results/
 output/
