@@ -3,8 +3,10 @@
 config.json
 
 # 日志（运行时生成）
-logs/*.log
-logs/.last_run
+logs/
+
+# 产品规划（本地文档）
+PRODUCT_PLAN.md
 
 # 缓存
 __pycache__/
