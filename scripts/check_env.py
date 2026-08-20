@@ -92,7 +92,7 @@ def check_config_files():
     print_section("配置文件检查")
     import os
 
-    project_root = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     files_to_check = {
         '.env': '存储敏感信息（邮箱授权码、API Key）',
@@ -149,7 +149,7 @@ def main():
     if all(checks):
         print("✅ 所有检查通过！环境配置正确。")
         print("\n下一步:")
-        print("  python weekly_report.py  # 运行一次测试")
+        print("  python src/weekly_report.py  # 运行一次测试")
         return 0
     else:
         print("❌ 部分检查未通过，请根据上述提示修复问题。")

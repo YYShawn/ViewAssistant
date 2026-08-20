@@ -20,15 +20,15 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 复制项目文件
-COPY weekly_report.py .
-COPY check_missed_run.py .
-COPY check_env.py .
+COPY src/weekly_report.py .
+COPY src/check_missed_run.py .
+COPY scripts/check_env.py .
 
 # 创建日志目录
 RUN mkdir -p /app/logs
 
 # 复制 cron 启动脚本
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY scripts/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # 暴露端口（如果需要 Web 配置界面，可选）

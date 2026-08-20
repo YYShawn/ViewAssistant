@@ -10,7 +10,7 @@
 ---
 
 命令行运行
-  ./dev.sh
+  ./scripts/dev.sh
 
 ## 前置准备（所有系统通用）
 
@@ -22,7 +22,7 @@
 快速检测环境是否就绪：
 
 ```bash
-python3 check_env.py
+python3 scripts/check_env.py
 ```
 
 ### 1. 获取 QQ 邮箱 IMAP 授权码
@@ -42,7 +42,7 @@ python3 check_env.py
 
 ```bash
 git clone https://github.com/YYShawn/ViewAssistant.git
-cd ViewAssistant-
+cd ViewAssistant
 ```
 
 ### 4. 安装 Python 依赖
@@ -98,7 +98,7 @@ DEEPSEEK_API_KEY=你的DeepSeek_API_Key
 ### 7. 手动测试
 
 ```bash
-python weekly_report.py
+python src/weekly_report.py
 ```
 
 输出 `[完成] 报告已保存：...` 即表示配置正确。
@@ -128,7 +128,7 @@ crontab -e
 在文件末尾添加：
 
 ```
-0 9 * * 5 /usr/bin/python3 /完整路径/ViewAssistant/weekly_report.py >> /完整路径/ViewAssistant/run.log 2>&1
+0 9 * * 5 /usr/bin/python3 /完整路径/ViewAssistant/src/weekly_report.py >> /完整路径/ViewAssistant/run.log 2>&1
 ```
 
 验证是否生效：
@@ -151,7 +151,7 @@ crontab -l
     <key>ProgramArguments</key>
     <array>
         <string>/usr/bin/python3</string>
-        <string>/完整路径/ViewAssistant/check_missed_run.py</string>
+        <string>/完整路径/ViewAssistant/src/check_missed_run.py</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -199,13 +199,13 @@ launchctl load ~/Library/LaunchAgents/com.viewassistant.checkrun.plist
 4. 触发器选择 **每周**，勾选 **星期五**，时间设为 `09:00`
 5. 操作选择 **启动程序**：
    - 程序：`python`
-   - 参数：`C:\完整路径\ViewAssistant\weekly_report.py`
+   - 参数：`C:\完整路径\ViewAssistant\src\weekly_report.py`
    - 起始于：`C:\完整路径\ViewAssistant\`
 6. 完成后右键任务 → **运行** 测试是否正常
 
 ### 设置开机补跑（任务计划程序）
 
-重复上述步骤，触发器改为 **计算机启动时**，程序参数改为 `check_missed_run.py`。
+重复上述步骤，触发器改为 **计算机启动时**，程序参数改为 `src/check_missed_run.py`。
 
 ---
 
@@ -234,7 +234,7 @@ crontab -e
 添加：
 
 ```
-0 9 * * 5 /usr/bin/python3 /完整路径/ViewAssistant/weekly_report.py >> /完整路径/ViewAssistant/run.log 2>&1
+0 9 * * 5 /usr/bin/python3 /完整路径/ViewAssistant/src/weekly_report.py >> /完整路径/ViewAssistant/run.log 2>&1
 ```
 
 ### 设置开机补跑（systemd）
@@ -248,7 +248,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /完整路径/ViewAssistant/check_missed_run.py
+ExecStart=/usr/bin/python3 /完整路径/ViewAssistant/src/check_missed_run.py
 StandardOutput=append:/完整路径/ViewAssistant/startup_check.log
 StandardError=append:/完整路径/ViewAssistant/startup_check.log
 
@@ -325,7 +325,7 @@ A: 是的。如果使用虚拟环境，运行前需要先 `source venv/bin/activ
 A: 在 crontab 中使用虚拟环境内的 Python：
 
 ```
-0 9 * * 5 /完整路径/ViewAssistant/venv/bin/python /完整路径/ViewAssistant/weekly_report.py >> /完整路径/ViewAssistant/run.log 2>&1
+0 9 * * 5 /完整路径/ViewAssistant/venv/bin/python /完整路径/ViewAssistant/src/weekly_report.py >> /完整路径/ViewAssistant/run.log 2>&1
 ```
 
 ### 依赖安装问题
@@ -342,12 +342,18 @@ A: 使用国内镜像源：`pip install -r requirements.txt -i https://pypi.tuna
 
 ```
 ViewAssistant/
-├── weekly_report.py              # 主脚本
-├── check_missed_run.py           # 开机补跑脚本
-├── check_env.py                  # 环境检测脚本
-├── server.py                     # Web 配置后端
+├── src/
+│   ├── weekly_report.py           # 主脚本
+│   ├── check_missed_run.py        # 开机补跑脚本
+│   └── server.py                  # Web 配置后端
+├── scripts/
+│   ├── check_env.py               # 环境检测脚本
+│   ├── dev.sh                     # 开发服务器启动脚本
+│   └── docker-entrypoint.sh       # Docker 启动脚本
+├── docs/
+│   └── DEPLOY.md                  # 部署指南
 ├── templates/
-│   └── index.html                # Web 配置页面
+│   └── index.html                 # Web 配置页面
 ├── 启动ViewAssistant.command     # macOS 双击启动
 ├── 启动ViewAssistant.bat         # Windows 双击启动
 ├── 启动ViewAssistant.sh          # Linux 双击启动
@@ -358,7 +364,6 @@ ViewAssistant/
 ├── config.example.json           # 配置模板
 ├── .env                          # 密钥文件（不上传 GitHub）
 ├── .gitignore
-├── DEPLOY.md                     # 部署指南
 └── logs/                         # 运行时自动生成（不上传 GitHub）
     ├── run.log                   # 定时任务日志
     ├── startup_check.log         # 补跑日志
