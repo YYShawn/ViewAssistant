@@ -41,7 +41,7 @@ python3 check_env.py
 ### 3. 克隆项目
 
 ```bash
-git clone https://github.com/shawyingying/ViewAssistant-.git
+git clone https://github.com/YYShawn/ViewAssistant.git
 cd ViewAssistant-
 ```
 
