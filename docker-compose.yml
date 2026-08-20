@@ -3,12 +3,12 @@ services:
     build: .
     container_name: viewassistant
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
       - TZ=Asia/Shanghai
       - CRON_SCHEDULE=0 9 * * 5
+      - OUTPUT_DIR=/app/output
     volumes:
       - ./config.json:/app/config.json:ro
+      - ./.env:/app/.env:ro
       - ./output:/app/output
       - ./logs:/app/logs

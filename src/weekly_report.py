@@ -23,7 +23,7 @@ with open(os.path.join(BASE_DIR, "config.json")) as f:
 EMAIL = cfg["email"]
 IMAP_HOST = cfg["imap_host"]
 PASSWORD = env["EMAIL_PASSWORD"]
-OUTPUT_DIR = os.path.expanduser(cfg["output_dir"])
+OUTPUT_DIR = os.environ.get("OUTPUT_DIR") or os.path.expanduser(cfg["output_dir"])
 PROMPT = cfg["prompt"]
 
 

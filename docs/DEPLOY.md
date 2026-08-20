@@ -309,8 +309,9 @@ docker-compose down
 ### 说明
 
 - 容器内运行 cron 守护进程，按 `config.json` 中的调度配置自动执行
-- 输出目录会挂载到宿主机，文件保存在你配置的 `output_dir`
-- 如需修改配置，编辑 `.env` 或 `config.json` 后执行 `docker-compose restart`
+- `.env` 和 `config.json` 以只读方式挂载到容器，修改后需 `docker-compose restart`
+- 输出目录固定为宿主机的 `./output` 目录（容器内 `OUTPUT_DIR=/app/output`），不受 `config.json` 中 `output_dir` 影响
+- 日志写入宿主机的 `./logs` 目录
 
 ---
 

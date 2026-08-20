@@ -19,13 +19,11 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 复制项目文件
-COPY src/weekly_report.py .
-COPY src/check_missed_run.py .
-COPY scripts/check_env.py .
+# 复制项目源码（保持目录结构，脚本依赖 BASE_DIR 定位 config/.env）
+COPY src/ ./src/
 
-# 创建日志目录
-RUN mkdir -p /app/logs
+# 创建日志和输出目录
+RUN mkdir -p /app/logs /app/output
 
 # 复制 cron 启动脚本
 COPY scripts/docker-entrypoint.sh /docker-entrypoint.sh
