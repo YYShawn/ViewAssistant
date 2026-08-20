@@ -2,6 +2,21 @@
 DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
 
+# 检查虚拟环境，不存在则创建
+if [ ! -d "venv" ]; then
+    echo "📦 正在创建虚拟环境..."
+    python3 -m venv venv
+fi
+
+# 激活虚拟环境
+source venv/bin/activate
+
+# 检查依赖
+if ! python -c "import fastapi" 2>/dev/null; then
+    echo "📦 正在安装依赖（首次运行需要几分钟）..."
+    pip install -r requirements.txt -q
+fi
+
 # 释放 8000 端口（如已被占用）
 if command -v lsof > /dev/null; then
     lsof -ti:8000 | xargs kill -9 2>/dev/null
@@ -10,7 +25,7 @@ elif command -v fuser > /dev/null; then
 fi
 
 echo "🚀 正在启动 ViewAssistant..."
-python3 "$DIR/src/server.py" &
+python "$DIR/src/server.py" &
 SERVER_PID=$!
 
 # 等待服务器就绪（最多 10 秒）

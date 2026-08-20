@@ -1,1 +1,23 @@
+# 敏感信息（不上传）
 .env
+config.json
+
+# 日志（运行时生成）
+logs/*.log
+logs/.last_run
+
+# 缓存
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# macOS
+.DS_Store
+
+# Claude 对话记录
+.waylog/
+
+# 输出
+results/
+output/
